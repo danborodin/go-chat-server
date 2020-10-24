@@ -2,14 +2,14 @@ package router
 
 import (
 	"github.com/danborodin/go-chat-server/handler"
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/logger"
+
+	"github.com/gorilla/mux"
 )
 
-// SetupRoutes set routes
-func SetupRoutes(app *fiber.App) {
+var Router = mux.NewRouter()
 
-	// Middleware
-	api := app.Group("/api", logger.New())
-	api.Get("/", handler.Hello)
+// SetupRoutes set routes
+func SetupRoutes() {
+	Router.HandleFunc("/", handler.TestHandler)
+	Router.HandleFunc("/login", handler.Login).Methods("POST")
 }
