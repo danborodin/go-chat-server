@@ -2,7 +2,7 @@
 
 User struct ->
 
-User { ID int, Username string, Password string, Nickname string }
+User { ID primitive.ObjectID, Username string, Salt string, Password string}
 
 Message struct ->
 
