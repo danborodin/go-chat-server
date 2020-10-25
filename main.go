@@ -9,5 +9,6 @@ import (
 
 func main() {
 	router.SetupRoutes()
-	log.Fatal(http.ListenAndServe("192.168.1.221:8000", router.Router))
+	log.Printf("Server running at address %s", router.Host)
+	log.Fatal(http.ListenAndServe(router.Host, router.Router))
 }

@@ -7,6 +7,7 @@ import (
 
 	"github.com/danborodin/go-chat-server/config"
 	"github.com/danborodin/go-chat-server/models"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -16,9 +17,9 @@ var (
 	//DB *mongo.Database
 
 	// DbName - database name
-	DbName string = config.Config("DATABASE_NAME")
+	DbName string = config.GetEnvVar("DATABASE_NAME")
 	// ConnectionString - string for connecting to database
-	ConnectionString string = config.Config("DATABASE_CONNECTION_STRING")
+	ConnectionString string = config.GetEnvVar("DATABASE_CONNECTION_STRING")
 	// Context is the context variable
 	//Context context.Context, Context2 context.CancelFunc() = context.WithTimeout(context.Background(), 10*time.Second)
 )
@@ -39,23 +40,40 @@ func Connect(connString string) *mongo.Client {
 	return client
 }
 
-// AddUserToDatabase add a user to database
+// AddUser add a user to database
 func AddUser(user models.User) error {
 
 	client := Connect(ConnectionString)
 	userCollection := client.Database(fmt.Sprintf("%s", DbName)).Collection("users")
 
 	//res = insert result
-	_, err := userCollection.InsertOne(context.TODO(), user)
+	res, err := userCollection.InsertOne(context.TODO(), user)
 	if err != nil {
 		log.Println(err)
+		return err
 	}
+	log.Println(fmt.Sprintf("User with id %v added", res.InsertedID))
 
 	defer client.Disconnect(context.TODO())
 
-	return nil
+	return err
 }
 
-func GetUserByID(id string) {
+// CheckUsernameExist return true if user with specified username exist or false is not
+func CheckUsernameExist(username string) (bool, error) {
+	client := Connect(ConnectionString)
+	userCollection := client.Database(fmt.Sprintf("%s", DbName)).Collection("users")
 
+	var result models.User
+	err := userCollection.FindOne(context.TODO(), bson.M{"username": username}).Decode(&result)
+	if err != nil {
+		return false, err
+	}
+	defer client.Disconnect(context.TODO())
+
+	return true, err
 }
+
+// func GetUserByID(id string) {
+
+// }
