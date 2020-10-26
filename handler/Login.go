@@ -47,7 +47,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		var tokenClaim = models.Token{
 			Username: _user.UserName,
 			StandardClaims: jwt.StandardClaims{
-				ExpiresAt: time.Now().Add(1 * time.Minute).Unix(),
+				ExpiresAt: time.Now().Add(100 * time.Minute).Unix(),
 			},
 		}
 

@@ -32,12 +32,10 @@ func Magic(password string) (string, string) {
 func IsMagicEqual(password string, passwordHash string, salt string) bool {
 
 	condiments := salt + password + pepper
-	_passHash := sha256.Sum256([]byte(condiments))
-	if fmt.Sprintf("%x", _passHash) != passwordHash {
+	_passwordHash := sha256.Sum256([]byte(condiments))
+	if fmt.Sprintf("%x", _passwordHash) != passwordHash {
 		return false
 	}
 
 	return true
 }
-
-//jwt.sign(user, secretKey)

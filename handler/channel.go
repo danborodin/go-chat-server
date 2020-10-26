@@ -3,11 +3,12 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"strings"
 
 	"github.com/danborodin/go-chat-server/models"
-	"github.com/dgrijalva/jwt-go"
+	jwt "github.com/dgrijalva/jwt-go"
 )
 
 // GetChannels return all users channels
@@ -18,18 +19,15 @@ func GetChannels(w http.ResponseWriter, r *http.Request) {
 	token, err := ValidateToken(bearerToken)
 
 	if err != nil {
-		if err == jwt.ErrSignatureInvalid {
-			w.WriteHeader(http.StatusUnauthorized)
-			w.Write([]byte("Unauthorized"))
-			return
-		}
-
-		w.WriteHeader(http.StatusBadRequest)
+		log.Println(err)
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Write([]byte("Unauthorized"))
 		return
 	}
 
 	if !token.Valid {
 		w.WriteHeader(http.StatusUnauthorized)
+		w.Write([]byte("Unauthorized"))
 		return
 	}
 
@@ -41,11 +39,16 @@ func GetChannels(w http.ResponseWriter, r *http.Request) {
 // ValidateToken validates the token with the secret key and return the object
 func ValidateToken(bearerToken string) (*jwt.Token, error) {
 
-	tokenString := strings.Split(bearerToken, " ")[0]
+	tokenString := strings.Split(bearerToken, " ")[1]
 
 	token, err := jwt.ParseWithClaims(tokenString, &models.Token{}, func(token *jwt.Token) (interface{}, error) {
 		return key, nil
 	})
 
 	return token, err
+}
+
+// GetChannelByID ...
+func GetChannelByID(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
 }
