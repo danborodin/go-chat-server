@@ -21,7 +21,7 @@ func Magic(password string) (string, string) {
 		log.Println(err)
 	}
 
-	salt := sha256.Sum256([]byte(arr))
+	salt := sha256.Sum256(arr)
 	condiments := fmt.Sprintf("%x", salt) + password + pepper
 	passwordHash := sha256.Sum256([]byte(condiments))
 

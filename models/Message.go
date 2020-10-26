@@ -1,9 +1,11 @@
 package models
 
+import "go.mongodb.org/mongo-driver/bson/primitive"
+
 // Message struct
 type Message struct {
-	ID     int    `json:"id"`
-	Sender User   `json:"sender"`
-	Text   string `json:"text"`
-	Date   string `json:"date"`
+	ID     primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	Sender User               `json:"sender,omitempty" bson:"sender,omitempty"`
+	Text   string             `json:"text,omitempty" bson:"text,omitempty"`
+	Date   string             `json:"date,omitempty" bson:"date,omitempty"`
 }

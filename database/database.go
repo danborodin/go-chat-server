@@ -73,3 +73,25 @@ func GetUserByUsername(username string) (models.User, error) {
 
 	return result, err
 }
+
+// working...
+// GetChannels ...
+func GetChannels() ([]models.Channel, error) {
+	client := Connect(ConnectionString)
+	channelCollection := client.Database(fmt.Sprintf("%s", DbName)).Collection("channels")
+
+	var result []models.Channel
+	err := channelCollection.FindOne(context.TODO(), bson.M{"name": "channelu_pulii_mele"}).Decode(&result)
+	if err != nil {
+		log.Println(err)
+		return result, err
+	}
+	// err = cursor.All(context.TODO(), &result)
+	// if err != nil {
+	// 	log.Println(err)
+	// 	return result, err
+	// }
+	defer client.Disconnect(context.TODO())
+
+	return result, err
+}
