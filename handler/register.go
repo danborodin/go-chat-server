@@ -26,17 +26,19 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := database.CheckUsernameExist(user.UserName)
+	//check if username already exist in database
+	_user, err := database.GetUserByUsername(user.UserName)
 	if err != nil {
 		log.Println(err)
 	}
-	if res {
+	if _user.UserName != "" {
 		log.Println("Register failed, username taken")
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("Register failed, username taken"))
 		return
 	}
 
+	// encrypt user password
 	user.Password, user.Salt = utils.Magic(user.Password)
 
 	err = database.AddUser(user)

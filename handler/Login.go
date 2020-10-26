@@ -15,11 +15,6 @@ import (
 	jwt "github.com/dgrijalva/jwt-go"
 )
 
-type Token struct {
-	Username string `json:"username,omitempty" bson:"username,omitempty"`
-	jwt.StandardClaims
-}
-
 var key = []byte(config.GetEnvVar("TOKEN_SECRET_KEY"))
 
 // Login ...
@@ -49,7 +44,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	if res {
 		log.Println(fmt.Sprintf("User with id %s logged in", _user.ID))
 
-		var tokenClaim = Token{
+		var tokenClaim = models.Token{
 			Username: _user.UserName,
 			StandardClaims: jwt.StandardClaims{
 				ExpiresAt: time.Now().Add(1 * time.Minute).Unix(),

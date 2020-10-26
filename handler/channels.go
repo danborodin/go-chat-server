@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/danborodin/go-chat-server/models"
 	"github.com/dgrijalva/jwt-go"
 )
 
@@ -32,7 +33,7 @@ func GetChannels(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user := token.Claims.(*Token)
+	user := token.Claims.(*models.Token)
 
 	json.NewEncoder(w).Encode(fmt.Sprintf("%s channels", user.Username))
 }
@@ -42,7 +43,7 @@ func ValidateToken(bearerToken string) (*jwt.Token, error) {
 
 	tokenString := strings.Split(bearerToken, " ")[0]
 
-	token, err := jwt.ParseWithClaims(tokenString, &Token{}, func(token *jwt.Token) (interface{}, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &models.Token{}, func(token *jwt.Token) (interface{}, error) {
 		return key, nil
 	})
 
