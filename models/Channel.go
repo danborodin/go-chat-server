@@ -7,3 +7,5 @@ type Channel struct {
 	Users    []User    `json:"users"`
 	Messages []Message `json:"messages"`
 }
+
+//un user are maim ulte chaneluri , nu un chanel mai muti useri... de regandit asta

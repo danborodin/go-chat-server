@@ -59,6 +59,21 @@ func AddUser(user models.User) error {
 	return err
 }
 
+// GetUserByUsername ...
+func GetUserByUsername(username string) (models.User, error) {
+	client := Connect(ConnectionString)
+	userCollection := client.Database(fmt.Sprintf("%s", DbName)).Collection("users")
+
+	var result models.User
+	err := userCollection.FindOne(context.TODO(), bson.M{"username": username}).Decode(&result)
+	if err != nil {
+		return result, err
+	}
+	defer client.Disconnect(context.TODO())
+
+	return result, err
+}
+
 // CheckUsernameExist return true if user with specified username exist or false is not
 func CheckUsernameExist(username string) (bool, error) {
 	client := Connect(ConnectionString)

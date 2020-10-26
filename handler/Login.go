@@ -3,32 +3,71 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
+	"time"
+
+	"github.com/danborodin/go-chat-server/config"
+	"github.com/danborodin/go-chat-server/database"
+	"github.com/danborodin/go-chat-server/models"
+	"github.com/danborodin/go-chat-server/utils"
+
+	jwt "github.com/dgrijalva/jwt-go"
 )
 
-var username = "test123"
-var password = "test321"
-
-type credentials struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
+type Token struct {
+	Username string `json:"username,omitempty" bson:"username,omitempty"`
+	jwt.StandardClaims
 }
 
+var key = []byte(config.GetEnvVar("TOKEN_SECRET_KEY"))
+
+// Login ...
 func Login(w http.ResponseWriter, r *http.Request) {
-	var cred credentials
+	//user data from request
+	var user models.User
 	dec := json.NewDecoder(r.Body)
-	err := dec.Decode(&cred)
+	err := dec.Decode(&user)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 
-	if (cred.Username != username) || (cred.Password != password) {
+	//user data from database
+	_user, err := database.GetUserByUsername(user.UserName)
+	if err != nil {
+		log.Println(err)
+	}
+	if _user.UserName == "" {
+		log.Println(_user.UserName)
 		w.WriteHeader(http.StatusUnauthorized)
-		fmt.Println("Error")
+		w.Write([]byte("Login failed, username not found"))
 		return
 	}
-	//w.Write([]byte("Succes\n"))
-	fmt.Println("Succes")
 
-	//fmt.Println(cred)
+	//compare user data send in request with user data in database
+	res := utils.IsMagicEqual(user.Password, _user.Password, _user.Salt)
+	if res {
+		log.Println(fmt.Sprintf("User with id %s logged in", _user.ID))
+
+		var tokenClaim = Token{
+			Username: _user.UserName,
+			StandardClaims: jwt.StandardClaims{
+				ExpiresAt: time.Now().Add(1 * time.Minute).Unix(),
+			},
+		}
+
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, tokenClaim)
+
+		tokenString, err := token.SignedString(key)
+
+		if err != nil {
+			log.Println(err)
+		}
+		json.NewEncoder(w).Encode(tokenString)
+		return
+	}
+
+	w.WriteHeader(http.StatusUnauthorized)
+	w.Write([]byte("Login failed, username or password are incorrect"))
+	return
 }
