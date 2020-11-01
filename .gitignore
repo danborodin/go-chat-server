@@ -2,7 +2,4 @@
 *.env
 *.exe
 *.rest
-*.env
-*.exe
-*.rest
 go-chat-server
