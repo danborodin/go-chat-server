@@ -74,6 +74,24 @@ func GetUserByUsername(username string) (models.User, error) {
 	return result, err
 }
 
+// AddChannel add new channel to database
+func AddChannel(channel models.Channel) error {
+	client := Connect(ConnectionString)
+	channelCollection := client.Database(fmt.Sprintf("%s", DbName)).Collection("channels")
+
+	res, err := channelCollection.InsertOne(context.TODO(), channel)
+	if err != nil {
+		log.Println("Error adding a channel, ", err)
+		return err
+	}
+
+	log.Println(fmt.Sprintf("Channel with id %v added", res.InsertedID))
+
+	defer client.Disconnect(context.TODO())
+
+	return err
+}
+
 // working...
 
 // GetChannels ...

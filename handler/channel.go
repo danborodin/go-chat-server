@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -36,6 +37,31 @@ func GetChannels(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(channels)
+}
+
+// AddNewChannel ...
+func AddNewChannel(w http.ResponseWriter, r *http.Request) {
+	dec := json.NewDecoder(r.Body)
+	var channel models.Channel
+	err := dec.Decode(&channel)
+	if err != nil {
+		log.Println("Error while decoding channel from request", err)
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Json decoding failed"))
+		return
+	}
+
+	err = database.AddChannel(channel)
+	if err != nil {
+		log.Println("Error while adding channel to database", err)
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(fmt.Sprintf("%v", err)))
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Channel added successfully"))
+
+	return
 }
 
 // ValidateToken validates the token with the secret key and return the object
