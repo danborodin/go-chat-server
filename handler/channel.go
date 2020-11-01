@@ -2,11 +2,12 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
+	"errors"
 	"log"
 	"net/http"
 	"strings"
 
+	"github.com/danborodin/go-chat-server/database"
 	"github.com/danborodin/go-chat-server/models"
 	jwt "github.com/dgrijalva/jwt-go"
 )
@@ -31,13 +32,22 @@ func GetChannels(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user := token.Claims.(*models.Token)
+	channels, err := database.GetChannels()
 
-	json.NewEncoder(w).Encode(fmt.Sprintf("%s channels", user.Username))
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(channels)
 }
 
 // ValidateToken validates the token with the secret key and return the object
 func ValidateToken(bearerToken string) (*jwt.Token, error) {
+
+	if bearerToken == "" {
+		return nil, errors.New("Bearer token mising, unauthorized")
+	}
+
+	if len(strings.Split(bearerToken, " ")) <= 1 {
+		return nil, errors.New("Bearer token mising, unauthorized")
+	}
 
 	tokenString := strings.Split(bearerToken, " ")[1]
 
