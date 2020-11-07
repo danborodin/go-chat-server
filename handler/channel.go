@@ -85,10 +85,14 @@ func ValidateToken(bearerToken string) (*jwt.Token, error) {
 	return token, err
 }
 
+var connections []*websocket.Conn
+
 func ConnectToChannel(w http.ResponseWriter, r *http.Request) {
 	upgrader := websocket.Upgrader{}
 	upgrader.CheckOrigin = func(r *http.Request) bool { return true }
 	conn, err := upgrader.Upgrade(w, r, nil)
+	connections = append(connections, conn)
+	log.Println(&conn)
 	if err != nil {
 		log.Println(err)
 		return
@@ -105,9 +109,12 @@ func ConnectToChannel(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Println(err)
 		}
-		if err := conn.WriteMessage(msgType, msgData); err != nil {
-			log.Println(err)
+		for n := 0; n < len(connections); n++ {
+			if err := connections[n].WriteMessage(msgType, msgData); err != nil {
+				log.Println(err)
+			}
 		}
+		//connections[0].WriteMessage(msgType, msgData)
 		log.Println(string(msgData))
 	}
 }
