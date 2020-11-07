@@ -35,3 +35,5 @@ POST
 
 http://172.104.202.219:8080/channel/{id}
 GET
+
+ws://172.104.202.219:8080/channel/{id}
