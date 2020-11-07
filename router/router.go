@@ -20,7 +20,7 @@ func SetupRoutes() {
 	Router.HandleFunc("/login", handler.Login).Methods("POST")
 	Router.HandleFunc("/register", handler.Register).Methods("POST")
 	Router.HandleFunc("/channels", handler.GetChannels).Methods("GET")
-	Router.HandleFunc("/channels", handler.AddNewChannel).Methods("POST")
+	Router.HandleFunc("/channel", handler.AddNewChannel).Methods("POST")
 
 	Router.HandleFunc("/channel", handler.ConnectToChannel).Methods("GET")
 }
