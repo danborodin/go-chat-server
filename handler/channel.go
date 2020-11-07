@@ -11,6 +11,7 @@ import (
 	"github.com/danborodin/go-chat-server/database"
 	"github.com/danborodin/go-chat-server/models"
 	jwt "github.com/dgrijalva/jwt-go"
+	"github.com/gorilla/websocket"
 )
 
 // GetChannels return all users channels
@@ -84,7 +85,32 @@ func ValidateToken(bearerToken string) (*jwt.Token, error) {
 	return token, err
 }
 
-// GetChannelByID ...
-func GetChannelByID(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusNotImplemented)
+func ConnectToChannel(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("Huy"))
+	upgrader := websocket.Upgrader{}
+	upgrader.CheckOrigin = func(r *http.Request) bool { return true }
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	log.Println("Client connected")
+	err = conn.WriteMessage(1, []byte("Hi Bo$$!"))
+	if err != nil {
+		log.Println(err)
+	}
+
+	for {
+		msgType, msgData, err := conn.ReadMessage()
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		if err := conn.WriteMessage(msgType, msgData); err != nil {
+			log.Println(err)
+			return
+		}
+		log.Println(string(msgData))
+	}
 }
