@@ -85,7 +85,17 @@ func ValidateToken(bearerToken string) (*jwt.Token, error) {
 	return token, err
 }
 
+//-----------------------------------------------------
+
 var connections []*websocket.Conn
+var m = 0
+
+var msgData = models.Message{
+	ID:     1,
+	Sender: "Pidor",
+	Text:   "Huynea text",
+	Date:   "huynea date",
+}
 
 func ConnectToChannel(w http.ResponseWriter, r *http.Request) {
 	upgrader := websocket.Upgrader{}
@@ -99,22 +109,26 @@ func ConnectToChannel(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Println("Client connected")
-	err = conn.WriteMessage(1, []byte("Hi Bo$$!"))
+	err = conn.WriteJSON(msgData)
 	if err != nil {
 		log.Println(err)
 	}
 
 	for {
-		msgType, msgData, err := conn.ReadMessage()
+		err := conn.ReadJSON(msgData)
 		if err != nil {
 			log.Println(err)
 		}
 		for n := 0; n < len(connections); n++ {
-			if err := connections[n].WriteMessage(msgType, msgData); err != nil {
+			if err := connections[n].WriteJSON(msgData); err != nil {
 				log.Println(err)
 			}
 		}
+		if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
+			m--
+			log.Println("Client futut")
+		}
 		//connections[0].WriteMessage(msgType, msgData)
-		log.Println(string(msgData))
+		log.Println(msgData)
 	}
 }
