@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/danborodin/go-chat-server/router"
-	"github.com/gorilla/websocket"
 )
 
 func main() {

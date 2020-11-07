@@ -5,4 +5,5 @@
 *.env
 *.exe
 *.rest
+*.html
 go-chat-server
