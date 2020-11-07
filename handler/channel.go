@@ -116,11 +116,12 @@ func ConnectToChannel(w http.ResponseWriter, r *http.Request) {
 
 	for {
 		_, msg2, err := conn.ReadMessage()
+		msgData.Text = string(msg2)
 		if err != nil {
 			log.Println(err)
 		}
 		for n := 0; n < len(connections); n++ {
-			if err := connections[n].WriteJSON(msg2); err != nil {
+			if err := connections[n].WriteJSON(msgData); err != nil {
 				log.Println(err)
 			}
 		}
