@@ -32,3 +32,6 @@ GET
 http://172.104.202.219:8080/channel
 POST
 {"name":""}
+
+http://172.104.202.219:8080/channel/{id}
+GET
