@@ -1,3 +1,7 @@
+
+*.env
+*.exe
+*.rest
 *.env
 *.exe
 *.rest
