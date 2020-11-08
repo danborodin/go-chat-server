@@ -8,9 +8,9 @@ Message struct ->
 
 Message {ID int, Sender User, Text string, Date string }
 
-Channel struct ->
+Room object ->
 
-Channel {ID int, Name string, Users []User, Messages []Message}
+Room {ID int, Name string, Owner string, Messages []Message}
 
 http://172.104.202.219:8080/register
 POST
@@ -26,14 +26,14 @@ POST
   "password": ""
 }
 
-http://172.104.202.219:8080/channels
+http://172.104.202.219:8080/rooms
 GET
 
-http://172.104.202.219:8080/channel
+http://172.104.202.219:8080/room
 POST
 {"name":""}
 
-http://172.104.202.219:8080/channel/{id}
+http://172.104.202.219:8080/room/{id}
 GET
 
-ws://172.104.202.219:8080/channel/{id}
+ws://172.104.202.219:8080/room/{id}
