@@ -104,8 +104,7 @@ func ConnectToRoom(w http.ResponseWriter, r *http.Request) {
 		log.Println("Error while getting room id from user")
 	}
 	log.Println(string(roomID))
-	_room, err := database.GetRoomById(string(roomID))
-	log.Println(_room)
+	database.GetRoomById(string(roomID))
 
 	// for {
 	// 	mt, message, err := conn.ReadMessage()
