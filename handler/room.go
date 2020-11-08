@@ -51,8 +51,6 @@ func AddNewRoom(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Json decoding failed"))
 		return
 	}
-	log.Println(room.Name)
-	log.Println(room.Owner)
 
 	err = database.AddRoom(room)
 	if err != nil {
@@ -89,6 +87,8 @@ func ValidateToken(bearerToken string) (*jwt.Token, error) {
 
 // need room id , not pointer to a room
 
+var ActiveRooms []models.Room
+
 func ConnectToRoom(w http.ResponseWriter, r *http.Request) {
 	upgrader := websocket.Upgrader{}
 	upgrader.CheckOrigin = func(r *http.Request) bool { return true }
@@ -103,7 +103,7 @@ func ConnectToRoom(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println("Error while getting room id from user")
 	}
-	log.Println(roomID)
+	log.Println(string(roomID))
 
 	for {
 		mt, message, err := conn.ReadMessage()
