@@ -51,6 +51,8 @@ func AddNewRoom(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Json decoding failed"))
 		return
 	}
+	log.Println(room.Name)
+	log.Println(room.Owner)
 
 	err = database.AddRoom(room)
 	if err != nil {
@@ -61,7 +63,6 @@ func AddNewRoom(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("Room added successfully"))
-	log.Println(room.Owner)
 
 	return
 }
