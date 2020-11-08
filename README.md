@@ -2,15 +2,15 @@
 
 User struct ->
 
-User { ID primitive.ObjectID, Username string, Salt string, Password string}
+User { _id primitive.ObjectID, username string, salt string, password string}
 
 Message struct ->
 
-Message {ID int, Sender User, Text string, Date string }
+Message {_id int, sender User, text string, date string }
 
 Room object ->
 
-Room {ID int, Name string, Owner string, Messages []Message}
+Room {_id int, name string, owner string, messages []Message}
 
 http://172.104.202.219:8080/register
 POST
