@@ -33,25 +33,25 @@ func NewRoom(name string, messages []Message, owner string) *Room {
 	return &room
 }
 
-func (room *Room) Run() {
-	for {
-		select {
-		case user := <-room.Register:
-			room.Users[user] = true
-		case user := <-room.Unregister:
-			if _, ok := room.Users[user]; ok {
-				delete(room.Users, user)
-				close(user.Send)
-			}
-		case message := <-room.Brodcast:
-			for user := range room.Users {
-				select {
-				case user.Send <- message:
-				default:
-					close(user.Send)
-					delete(room.Users, user)
-				}
-			}
-		}
-	}
-}
+// func (room *Room) Run() {
+// 	for {
+// 		select {
+// 		case user := <-room.Register:
+// 			room.Users[user] = true
+// 		case user := <-room.Unregister:
+// 			if _, ok := room.Users[user]; ok {
+// 				delete(room.Users, user)
+// 				close(user.Send)
+// 			}
+// 		case message := <-room.Brodcast:
+// 			for user := range room.Users {
+// 				select {
+// 				case user.Send <- message:
+// 				default:
+// 					close(user.Send)
+// 					delete(room.Users, user)
+// 				}
+// 			}
+// 		}
+// 	}
+// }

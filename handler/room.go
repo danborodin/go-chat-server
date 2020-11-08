@@ -95,12 +95,27 @@ func ConnectToRoom(w http.ResponseWriter, r *http.Request) {
 		log.Println("Error in ConnectToRoom handler: ", err)
 		return
 	}
+	defer conn.Close()
 
 	_, roomID, err := conn.ReadMessage()
 	if err != nil {
 		log.Println("Error while getting room id from user")
 	}
 	log.Println(roomID)
+
+	for {
+		mt, message, err := conn.ReadMessage()
+		if err != nil {
+			log.Println("read:", err)
+			break
+		}
+		log.Printf("recv: %s", message)
+		err = conn.WriteMessage(mt, message)
+		if err != nil {
+			log.Println("write:", err)
+			break
+		}
+	}
 
 	//get room from db
 	//un slice cu room-urile active..?
