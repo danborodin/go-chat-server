@@ -97,7 +97,8 @@ func GetRoomById(id string) (models.Room, error) {
 	client := Connect(ConnectionString)
 	roomsCollection := client.Database(fmt.Sprintf("%s", DbName)).Collection("rooms")
 	_id, err := primitive.ObjectIDFromHex(id)
-	log.Println("huynea: ", _id)
+	log.Println("huynea: ", id)
+	log.Println("huynea2: ", _id)
 	result := roomsCollection.FindOne(context.Background(), bson.M{"_id": id})
 
 	room := models.Room{}
