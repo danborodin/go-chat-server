@@ -99,7 +99,7 @@ func GetRoomById(id string) (models.Room, error) {
 	_id, err := primitive.ObjectIDFromHex(id)
 	log.Println("huynea: ", id)
 	log.Println("huynea2: ", _id)
-	result := roomsCollection.FindOne(context.Background(), bson.M{"_id": id})
+	result := roomsCollection.FindOne(context.Background(), bson.M{"_id": _id})
 
 	var room models.Room
 	result.Decode(&room)
