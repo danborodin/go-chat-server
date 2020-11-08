@@ -6,15 +6,14 @@ import (
 
 // Room struct
 type Room struct {
-	ID       primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
-	Name     string             `json:"name,omitempty" bson:"name,omitempty"`
-	Owner    string             `json:"owner,omitempty" bson:"owner,omitempty"`
-	Messages []Message          `json:"messages,omitempty" bson:"messages,omitempty"`
-
-	Users      map[*User]bool
-	Brodcast   chan []byte
-	Register   chan *User
-	Unregister chan *User
+	ID         primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	Name       string             `json:"name,omitempty" bson:"name,omitempty"`
+	Owner      string             `json:"owner,omitempty" bson:"owner,omitempty"`
+	Messages   []Message          `json:"messages,omitempty" bson:"messages,omitempty"`
+	Users      map[*User]bool     `json:"-" bson:"-"`
+	Brodcast   chan []byte        `json:"-" bson:"-"`
+	Register   chan *User         `json:"-" bson:"-"`
+	Unregister chan *User         `json:"-" bson:"-"`
 }
 
 // NewRoom is a constructor
@@ -33,25 +32,25 @@ func NewRoom(name string, messages []Message, owner string) *Room {
 	return &room
 }
 
-// func (room *Room) Run() {
-// 	for {
-// 		select {
-// 		case user := <-room.Register:
-// 			room.Users[user] = true
-// 		case user := <-room.Unregister:
-// 			if _, ok := room.Users[user]; ok {
-// 				delete(room.Users, user)
-// 				close(user.Send)
-// 			}
-// 		case message := <-room.Brodcast:
-// 			for user := range room.Users {
-// 				select {
-// 				case user.Send <- message:
-// 				default:
-// 					close(user.Send)
-// 					delete(room.Users, user)
-// 				}
-// 			}
-// 		}
-// 	}
-// }
+func (room *Room) Run() {
+	for {
+		select {
+		case user := <-room.Register:
+			room.Users[user] = true
+		case user := <-room.Unregister:
+			if _, ok := room.Users[user]; ok {
+				delete(room.Users, user)
+				close(user.Send)
+			}
+		case message := <-room.Brodcast:
+			for user := range room.Users {
+				select {
+				case user.Send <- message:
+				default:
+					close(user.Send)
+					delete(room.Users, user)
+				}
+			}
+		}
+	}
+}
