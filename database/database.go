@@ -2,13 +2,13 @@ package database
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log"
 
 	"github.com/danborodin/go-chat-server/config"
 	"github.com/danborodin/go-chat-server/models"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -93,10 +93,14 @@ func AddRoom(room models.Room) error {
 	return err
 }
 
-func GetRoomById() (models.Room, error) {
+func GetRoomById(id string) (models.Room, error) {
+	client := Connect(ConnectionString)
+	roomsCollection := client.Database(fmt.Sprintf("%s", DbName)).Collection("rooms")
+	_id, err := primitive.ObjectIDFromHex(id)
+	result := roomsCollection.FindOne(context.Background(), bson.M{"_id": _id})
 
 	room := models.Room{}
-	err := errors.New("working on this error")
+	result.Decode(room)
 
 	return room, err
 }
