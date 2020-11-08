@@ -102,7 +102,7 @@ func GetRoomById(id string) (models.Room, error) {
 	result := roomsCollection.FindOne(context.Background(), bson.M{"_id": id})
 
 	room := models.Room{}
-	result.Decode(room)
+	result.Decode(&room)
 	log.Println(room)
 
 	return room, err
