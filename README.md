@@ -6,7 +6,7 @@ User { _id primitive.ObjectID, username string, salt string, password string}
 
 Message struct ->
 
-Message {_id int, sender User, text string, date string }
+Message {_id int, sender string, text string, date string }
 
 Room object ->
 
