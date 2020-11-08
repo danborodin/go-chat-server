@@ -61,7 +61,7 @@ func AddNewRoom(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("Room added successfully"))
-	log.Println(room)
+	log.Println(room.Owner)
 
 	return
 }
