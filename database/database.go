@@ -88,8 +88,6 @@ func AddRoom(room models.Room) error {
 
 	log.Println(fmt.Sprintf("Room with id %v added", res.InsertedID))
 
-	log.Println(room.ID)
-
 	defer client.Disconnect(context.TODO())
 
 	return err
@@ -120,7 +118,6 @@ func GetRooms() ([]models.Room, error) {
 		log.Println(err)
 		return result, err
 	}
-	fmt.Println("huynya: ", result[0].ID)
 	defer client.Disconnect(context.TODO())
 
 	return result, err
