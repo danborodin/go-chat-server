@@ -2,6 +2,7 @@ package database
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 
@@ -74,33 +75,41 @@ func GetUserByUsername(username string) (models.User, error) {
 	return result, err
 }
 
-// AddChannel add new channel to database
-func AddChannel(channel models.Channel) error {
+// AddRoom add new room to database
+func AddRoom(room models.Room) error {
 	client := Connect(ConnectionString)
-	channelCollection := client.Database(fmt.Sprintf("%s", DbName)).Collection("channels")
+	roomsCollection := client.Database(fmt.Sprintf("%s", DbName)).Collection("rooms")
 
-	res, err := channelCollection.InsertOne(context.TODO(), channel)
+	res, err := roomsCollection.InsertOne(context.TODO(), room)
 	if err != nil {
-		log.Println("Error adding a channel, ", err)
+		log.Println("Error adding a room, ", err)
 		return err
 	}
 
-	log.Println(fmt.Sprintf("Channel with id %v added", res.InsertedID))
+	log.Println(fmt.Sprintf("Room with id %v added", res.InsertedID))
 
 	defer client.Disconnect(context.TODO())
 
 	return err
 }
 
+func GetRoomById() (models.Room, error) {
+
+	room := models.Room{}
+	err := errors.New("working on this error")
+
+	return room, err
+}
+
 // working...
 
-// GetChannels ...
-func GetChannels() ([]models.Channel, error) {
+// GetRooms ...
+func GetRooms() ([]models.Room, error) {
 	client := Connect(ConnectionString)
-	channelCollection := client.Database(fmt.Sprintf("%s", DbName)).Collection("channels")
+	roomsCollection := client.Database(fmt.Sprintf("%s", DbName)).Collection("rooms")
 
-	var result []models.Channel
-	cursor, err := channelCollection.Find(context.TODO(), bson.M{})
+	var result []models.Room
+	cursor, err := roomsCollection.Find(context.TODO(), bson.M{})
 	if err != nil {
 		log.Println(err)
 	}

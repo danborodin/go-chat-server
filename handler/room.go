@@ -14,8 +14,8 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-// GetChannels return all users channels
-func GetChannels(w http.ResponseWriter, r *http.Request) {
+// GetRooms return all users rooms
+func GetRooms(w http.ResponseWriter, r *http.Request) {
 
 	bearerToken := r.Header.Get("Authorization")
 
@@ -34,33 +34,33 @@ func GetChannels(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	channels, err := database.GetChannels()
+	rooms, err := database.GetRooms()
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(channels)
+	json.NewEncoder(w).Encode(rooms)
 }
 
-// AddNewChannel ...
-func AddNewChannel(w http.ResponseWriter, r *http.Request) {
+// AddNewRoom ...
+func AddNewRoom(w http.ResponseWriter, r *http.Request) {
 	dec := json.NewDecoder(r.Body)
-	var channel models.Channel
-	err := dec.Decode(&channel)
+	var room models.Room
+	err := dec.Decode(&room)
 	if err != nil {
-		log.Println("Error while decoding channel from request", err)
+		log.Println("Error while decoding room from request", err)
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("Json decoding failed"))
 		return
 	}
 
-	err = database.AddChannel(channel)
+	err = database.AddRoom(room)
 	if err != nil {
-		log.Println("Error while adding channel to database", err)
+		log.Println("Error while adding room to database", err)
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(fmt.Sprintf("%v", err)))
 	}
 
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Channel added successfully"))
+	w.Write([]byte("Room added successfully"))
 
 	return
 }
@@ -85,51 +85,26 @@ func ValidateToken(bearerToken string) (*jwt.Token, error) {
 	return token, err
 }
 
-//-----------------------------------------------------
+// need room id , not pointer to a room
 
-var connections []*websocket.Conn
-var m = 0
-
-var msgData = models.Message{
-	ID:     1,
-	Sender: "Pidor",
-	Text:   "Huynea text",
-	Date:   "huynea date",
-}
-
-func ConnectToChannel(w http.ResponseWriter, r *http.Request) {
+func ConnectToRoom(w http.ResponseWriter, r *http.Request) {
 	upgrader := websocket.Upgrader{}
 	upgrader.CheckOrigin = func(r *http.Request) bool { return true }
 	conn, err := upgrader.Upgrade(w, r, nil)
-	connections = append(connections, conn)
-	log.Println(&conn)
 	if err != nil {
-		log.Println(err)
+		log.Println("Error in ConnectToRoom handler: ", err)
 		return
 	}
 
-	log.Println("Client connected")
-	err = conn.WriteJSON(msgData)
+	_, roomID, err := conn.ReadMessage()
 	if err != nil {
-		log.Println(err)
+		log.Println("Error while getting room id from user")
 	}
+	log.Println(roomID)
 
-	for {
-		_, msg2, err := conn.ReadMessage()
-		msgData.Text = string(msg2)
-		if err != nil {
-			log.Println(err)
-		}
-		for n := 0; n < len(connections); n++ {
-			if err := connections[n].WriteJSON(msgData); err != nil {
-				log.Println(err)
-			}
-		}
-		if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-			m--
-			log.Println("Client futut")
-		}
-		//connections[0].WriteMessage(msgType, msgData)
-		log.Println(msgData)
-	}
+	//get room from db
+	//un slice cu room-urile active..?
+	// user := &models.User{
+	// 	Room: room,
+	// }
 }

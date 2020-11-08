@@ -6,4 +6,6 @@
 *.exe
 *.rest
 *.html
+todo.txt
+
 go-chat-server
