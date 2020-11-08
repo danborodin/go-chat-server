@@ -118,6 +118,7 @@ func GetRooms() ([]models.Room, error) {
 		log.Println(err)
 		return result, err
 	}
+	fmt.Println(result)
 	defer client.Disconnect(context.TODO())
 
 	return result, err
