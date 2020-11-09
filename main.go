@@ -29,9 +29,9 @@ func main() {
 		Date:   "nov 9 20:12",
 	}
 
-	database.AddMessage("5fa7fee7bff4b94efc5b0288", msg1)
-	database.AddMessage("5fa7fee7bff4b94efc5b0288", msg2)
-	database.AddMessage("5fa7fee7bff4b94efc5b0288", msg3)
+	database.AddMessage("5fa98ded2a9305f45b36eb61", msg1)
+	database.AddMessage("5fa98ded2a9305f45b36eb61", msg2)
+	database.AddMessage("5fa98ded2a9305f45b36eb61", msg3)
 
 	router.SetupRoutes()
 	log.Printf("Server running at address %s", router.Host)
