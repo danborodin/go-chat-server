@@ -107,7 +107,6 @@ func ConnectToRoom(w http.ResponseWriter, r *http.Request) {
 	log.Println(string(roomID))
 	room, err := database.GetRoomByID(string(roomID))
 	conn.WriteJSON(room.Messages)
-	conn.Close()
 
 	// for {
 	// 	mt, message, err := conn.ReadMessage()
