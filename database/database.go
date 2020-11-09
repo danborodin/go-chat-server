@@ -93,12 +93,11 @@ func AddRoom(room models.Room) error {
 	return err
 }
 
-func GetRoomById(id string) (models.Room, error) {
+// GetRoomByID return a room structure
+func GetRoomByID(id string) (models.Room, error) {
 	client := Connect(ConnectionString)
 	roomsCollection := client.Database(fmt.Sprintf("%s", DbName)).Collection("rooms")
 	_id, err := primitive.ObjectIDFromHex(id)
-	log.Println("huynea: ", id)
-	log.Println("huynea2: ", _id)
 	result := roomsCollection.FindOne(context.Background(), bson.M{"_id": _id})
 
 	var room models.Room
@@ -128,4 +127,29 @@ func GetRooms() ([]models.Room, error) {
 	defer client.Disconnect(context.TODO())
 
 	return result, err
+}
+
+func AddMessage(roomID string, msg models.Message) error {
+
+	_roomID, err := primitive.ObjectIDFromHex(roomID)
+	if err != nil {
+		log.Println("Error while adding a message, cannot convert roomID from string to primitive.ObjectID: ", err)
+	}
+
+	client := Connect(ConnectionString)
+	roomsCollection := client.Database(fmt.Sprintf("%s", DbName)).Collection("rooms")
+	//res, err := roomsCollection.InsertOne(context.TODO(), msg, bson.D{})
+
+	query := bson.M{"_id": _roomID}
+	update := bson.M{"$push": bson.M{"Messages": msg}}
+	_, err = roomsCollection.UpdateOne(context.TODO(), query, update)
+	if err != nil {
+		log.Println("Error adding message: ", err)
+		return err
+	}
+	//cauta how to update a field dintrun document sau ceva de genu...
+	log.Println("Msg: ", msg.Text, "added in room with id: ", _roomID)
+	defer client.Disconnect(context.TODO())
+
+	return err
 }

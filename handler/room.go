@@ -93,6 +93,7 @@ func ConnectToRoom(w http.ResponseWriter, r *http.Request) {
 	upgrader := websocket.Upgrader{}
 	upgrader.CheckOrigin = func(r *http.Request) bool { return true }
 	conn, err := upgrader.Upgrade(w, r, nil)
+
 	if err != nil {
 		log.Println("Error in ConnectToRoom handler: ", err)
 		return
@@ -104,7 +105,8 @@ func ConnectToRoom(w http.ResponseWriter, r *http.Request) {
 		log.Println("Error while getting room id from user")
 	}
 	log.Println(string(roomID))
-	database.GetRoomById(string(roomID))
+	room, err := database.GetRoomByID(string(roomID))
+	conn.WriteJSON(room.Messages)
 
 	// for {
 	// 	mt, message, err := conn.ReadMessage()
