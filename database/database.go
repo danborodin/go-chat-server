@@ -138,8 +138,8 @@ func AddMessage(roomID string, msg models.Message) error {
 
 	client := Connect(ConnectionString)
 	roomsCollection := client.Database(fmt.Sprintf("%s", DbName)).Collection("rooms")
-	//res, err := roomsCollection.InsertOne(context.TODO(), msg, bson.D{})
 
+	msg.ID = primitive.NewObjectID()
 	query := bson.M{"_id": _roomID}
 	update := bson.M{"$push": bson.M{"Messages": msg}}
 	_, err = roomsCollection.UpdateOne(context.TODO(), query, update)
